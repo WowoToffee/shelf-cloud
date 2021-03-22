@@ -1,6 +1,7 @@
 package com.wowotoffer.shelf.auth.configure;
 
 import com.wowotoffer.shelf.auth.service.ShelfUserDetailService;
+import com.wowotoffer.shelf.auth.translator.ShelfWebResponseExceptionTranslator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,13 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 /**
+ * /oauth/authorize：授权端点
+ * /oauth/token：令牌端点
+ * /oauth/confirm_access：用户确认授权提交端点
+ * /oauth/error：授权服务错误信息端点
+ * /oauth/check_token：用于资源服务访问的令牌解析端点
+ * /oauth/token_key：提供公有密匙的端点，如果你使用JWT令牌的话
+ *
  * @author of
  * @version 1.0
  * @date 2021/3/19 11:45
@@ -25,21 +33,30 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
 @Configuration
 @EnableAuthorizationServer
 public class ShelfAuthorizationServerConfigure extends AuthorizationServerConfigurerAdapter {
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
-    @Autowired
-    private ShelfUserDetailService userDetailService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final RedisConnectionFactory redisConnectionFactory;
+    private final ShelfUserDetailService userDetailService;
+    private final PasswordEncoder passwordEncoder;
+    private final ShelfWebResponseExceptionTranslator exceptionTranslator;
+
+    public ShelfAuthorizationServerConfigure(AuthenticationManager authenticationManager, RedisConnectionFactory redisConnectionFactory, ShelfUserDetailService userDetailService, PasswordEncoder passwordEncoder, ShelfWebResponseExceptionTranslator exceptionTranslator) {
+        this.authenticationManager = authenticationManager;
+        this.redisConnectionFactory = redisConnectionFactory;
+        this.userDetailService = userDetailService;
+        this.passwordEncoder = passwordEncoder;
+        this.exceptionTranslator = exceptionTranslator;
+    }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
+                // client_id
                 .withClient("shelf")
+                // client_secret
                 .secret(passwordEncoder.encode("123456"))
+                // 该client允许的授权类型
                 .authorizedGrantTypes("password", "refresh_token")
+                // 允许的授权范围
                 .scopes("all");
     }
 
@@ -48,7 +65,8 @@ public class ShelfAuthorizationServerConfigure extends AuthorizationServerConfig
         endpoints.tokenStore(tokenStore())
                 .userDetailsService(userDetailService)
                 .authenticationManager(authenticationManager)
-                .tokenServices(defaultTokenServices());
+                .tokenServices(defaultTokenServices())
+                .exceptionTranslator(exceptionTranslator);
     }
 
     @Bean
@@ -58,6 +76,7 @@ public class ShelfAuthorizationServerConfigure extends AuthorizationServerConfig
 
     /**
      * 令牌属性
+     *
      * @return
      */
     @Primary

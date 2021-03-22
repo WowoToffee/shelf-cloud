@@ -1,9 +1,13 @@
 package com.wowotoffer.shelf.auth.configure;
 
+import com.wowotoffer.shelf.common.handler.ShelfAccessDeniedHandler;
+import com.wowotoffer.shelf.common.handler.ShelfAuthExceptionEntryPoint;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 
 /**
  * 处理spring security oauth2
@@ -16,6 +20,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 @EnableResourceServer
 public class ShelfResourceServerConfigure extends ResourceServerConfigurerAdapter {
 
+    @Autowired
+    private ShelfAccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    private ShelfAuthExceptionEntryPoint exceptionEntryPoint;
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
@@ -25,5 +35,9 @@ public class ShelfResourceServerConfigure extends ResourceServerConfigurerAdapte
                 .antMatchers("/**").authenticated();
     }
 
-
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+        resources.authenticationEntryPoint(exceptionEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler);
+    }
 }

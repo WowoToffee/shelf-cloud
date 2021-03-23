@@ -12,3 +12,31 @@ spring:
         max-active: 2000
         max-wait: 10000
     timeout: 5000
+  datasource:
+    dynamic:
+      hikari:
+        connection-timeout: 30000
+        max-lifetime: 1800000
+        max-pool-size: 15
+        min-idle: 5
+        connection-test-query: select 1
+        pool-name: ShelfHikariCP
+      primary: base
+      datasource:
+        base:
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/shelf_cloud_base?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+
+mybatis-plus:
+  # 指定别名扫描路径
+  type-aliases-package: com.wowotoffer.shelf.common.entity.system
+  # 指定MyBatis XML文件路径；
+  mapper-locations: classpath:mappers/*.xml
+  # 指定为null，否则再插入空值时会报“无效的列类型”错误
+  configuration:
+    jdbc-type-for-null: null
+  # 设置为false关闭MyBatis Plus Banner打印
+  global-config:
+    banner: false

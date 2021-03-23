@@ -1,6 +1,10 @@
 package com.wowotoffer.shelf.auth.service;
 
+import com.wowotoffer.shelf.auth.manager.UserManager;
 import com.wowotoffer.shelf.common.entity.ShelfAuthUser;
+import com.wowotoffer.shelf.common.entity.system.SystemUser;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -20,14 +24,25 @@ public class ShelfUserDetailService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserManager userManager;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        ShelfAuthUser user = new ShelfAuthUser();
-        user.setUsername(username);
-        user.setPassword(this.passwordEncoder.encode("123456"));
+        SystemUser systemUser = userManager.findByName(username);
+        if (systemUser != null) {
+            String permissions = userManager.findUserPermissions(systemUser.getUsername());
+            boolean notLocked = false;
+            if (StringUtils.equals(SystemUser.STATUS_VALID, systemUser.getStatus())){
+                notLocked = true;
+            }
+            ShelfAuthUser authUser = new ShelfAuthUser(systemUser.getUsername(), systemUser.getPassword(), true, true, true, notLocked,
+                    AuthorityUtils.commaSeparatedStringToAuthorityList(permissions));
 
-        return new User(username, user.getPassword(), user.isEnabled(),
-                user.isAccountNonExpired(), user.isCredentialsNonExpired(),
-                user.isAccountNonLocked(), AuthorityUtils.commaSeparatedStringToAuthorityList("user:add"));
+            BeanUtils.copyProperties(systemUser,authUser);
+            return authUser;
+        } else {
+            throw new UsernameNotFoundException("");
+        }
     }
 }

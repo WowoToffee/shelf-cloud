@@ -1,6 +1,7 @@
 package com.wowotoffer.shelf.auth;
 
 import com.wowotoffer.shelf.common.annotation.EnableShelfAuthExceptionHandler;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @EnableShelfAuthExceptionHandler
 @SpringBootApplication
+@MapperScan("com.wowotoffer.shelf.auth.mapper")
 public class ShelfAuthApplication {
     public static void main(String[] args) {
         SpringApplication.run(ShelfAuthApplication.class, args);

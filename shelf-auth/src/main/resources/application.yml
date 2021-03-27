@@ -28,7 +28,13 @@ spring:
           password: 123456
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://localhost:3306/shelf_cloud_base?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
-
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.33.11:8841
+        namespace: 16287963-260c-40ae-a8f3-4f58905202a5
+  application:
+    name: shelf-auth
 mybatis-plus:
   # 指定别名扫描路径
   type-aliases-package: com.wowotoffer.shelf.common.entity.system

@@ -1,8 +1,8 @@
 package com.wowotoffer.shelf.auth.service;
 
 import com.wowotoffer.shelf.auth.manager.UserManager;
-import com.wowotoffer.shelf.common.entity.ShelfAuthUser;
-import com.wowotoffer.shelf.common.entity.system.SystemUser;
+import com.wowotoffer.shelf.common.core.entity.ShelfAuthUser;
+import com.wowotoffer.shelf.common.core.entity.system.SystemUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

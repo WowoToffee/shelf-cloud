@@ -21,9 +21,23 @@
     <dependencies>
         <dependency>
             <groupId>com.wowoToffer</groupId>
-            <artifactId>shelf-common</artifactId>
+            <artifactId>shelf-common-redis-starter</artifactId>
             <version>${shelf-cloud.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.wowoToffer</groupId>
+            <artifactId>shelf-common-core</artifactId>
+            <version>${shelf-cloud.version}</version>
+        </dependency>
+
+        <!-- 图片校验 -->
+        <dependency>
+            <groupId>com.github.whvcse</groupId>
+            <artifactId>easy-captcha</artifactId>
+            <version>${easy-captcha.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>

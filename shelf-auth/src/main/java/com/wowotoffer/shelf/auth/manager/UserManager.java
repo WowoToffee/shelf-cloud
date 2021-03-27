@@ -2,8 +2,8 @@ package com.wowotoffer.shelf.auth.manager;
 
 import com.wowotoffer.shelf.auth.mapper.MenuMapper;
 import com.wowotoffer.shelf.auth.mapper.UserMapper;
-import com.wowotoffer.shelf.common.entity.system.Menu;
-import com.wowotoffer.shelf.common.entity.system.SystemUser;
+import com.wowotoffer.shelf.common.core.entity.system.Menu;
+import com.wowotoffer.shelf.common.core.entity.system.SystemUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

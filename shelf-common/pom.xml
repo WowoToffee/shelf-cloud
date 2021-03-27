@@ -16,6 +16,11 @@
     <packaging>pom</packaging>
     <description>shelf-common 公共模块</description>
 
+    <modules>
+        <module>shelf-common-core</module>
+        <module>shelf-common-redis-starter</module>
+    </modules>
+
     <dependencies>
         <dependency>
             <groupId>com.baomidou</groupId>

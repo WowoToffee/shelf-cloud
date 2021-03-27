@@ -1,7 +1,7 @@
 package com.wowotoffer.shelf.auth.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wowotoffer.shelf.common.entity.system.SystemUser;
+import com.wowotoffer.shelf.common.core.entity.system.SystemUser;
 
 /**
  * @author of

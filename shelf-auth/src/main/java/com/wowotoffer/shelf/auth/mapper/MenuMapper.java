@@ -1,7 +1,7 @@
 package com.wowotoffer.shelf.auth.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wowotoffer.shelf.common.entity.system.Menu;
+import com.wowotoffer.shelf.common.core.entity.system.Menu;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.wowotoffer.shelf.auth.configure;
 
-import com.wowotoffer.shelf.common.handler.ShelfAccessDeniedHandler;
-import com.wowotoffer.shelf.common.handler.ShelfAuthExceptionEntryPoint;
+import com.wowotoffer.shelf.common.core.handler.ShelfAccessDeniedHandler;
+import com.wowotoffer.shelf.common.core.handler.ShelfAuthExceptionEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,6 +32,7 @@ public class ShelfResourceServerConfigure extends ResourceServerConfigurerAdapte
                 .requestMatchers().antMatchers("/**")
                 .and()
                 .authorizeRequests()
+                .antMatchers("/captcha").permitAll()
                 .antMatchers("/**").authenticated();
     }
 

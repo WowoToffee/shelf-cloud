@@ -1,15 +1,18 @@
 package com.wowotoffer.shelf.auth.controller;
 
-import com.wowotoffer.shelf.common.entity.ShelfResponse;
-import com.wowotoffer.shelf.common.exception.ShelfAuthException;
+import com.wowotoffer.shelf.auth.service.ValidateCodeService;
+import com.wowotoffer.shelf.common.core.entity.ShelfResponse;
+import com.wowotoffer.shelf.common.core.exception.ShelfAuthException;
+import com.wowotoffer.shelf.common.core.exception.ValidateCodeException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Principal;
 
 /**
@@ -18,28 +21,45 @@ import java.security.Principal;
  * @date 2021/3/19 12:55
  */
 @RestController
+@RequiredArgsConstructor
 public class SecurityController {
-    @Autowired
-    private ConsumerTokenServices consumerTokenServices;
 
-    @GetMapping("oauth/test")
-    public String testOauth() {
-        return "oauth";
-    }
+    private final ConsumerTokenServices consumerTokenServices;
+    private final ValidateCodeService validateCodeService;
 
+
+    /**
+     * 获取当前登录用户信息
+     *
+      * @param principal
+     * @return
+     */
     @GetMapping("user")
     public Principal currentUser(Principal principal) {
         return principal;
     }
 
-    @DeleteMapping("signout")
-    public ShelfResponse signout(HttpServletRequest request) throws ShelfAuthException {
-        String authorization = request.getHeader("Authorization");
-        String token = StringUtils.replace(authorization, "bearer ", "");
-        ShelfResponse shelfResponse = new ShelfResponse();
-        if (!consumerTokenServices.revokeToken(token)) {
-            throw new ShelfAuthException("退出登录失败");
-        }
-        return shelfResponse.message("退出登录成功");
+    /**
+     * 获取验证码
+     *
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ValidateCodeException
+     */
+    @ResponseBody
+    @GetMapping("captcha")
+    public void captcha(HttpServletRequest request, HttpServletResponse response) throws IOException, ValidateCodeException {
+        validateCodeService.create(request, response);
+    }
+
+    /**
+     * 登录
+     *
+     * @return
+     */
+    @RequestMapping("login")
+    public String login() {
+        return "login";
     }
 }

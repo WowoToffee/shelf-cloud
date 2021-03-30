@@ -6,12 +6,12 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 192.168.33.11:8841
+        server-addr: ${nacos.url}:8841
         group: DEFAULT_GROUP
         prefix: shelf-auth
         file-extension: yaml
       discovery:
-        server-addr: 192.168.33.11:8841
+        server-addr: ${nacos.url}:8841
   thymeleaf:
     cache: false
 

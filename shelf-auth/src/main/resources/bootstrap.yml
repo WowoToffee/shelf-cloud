@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: Shelf-Auth
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.33.11:8841
+        group: DEFAULT_GROUP
+        prefix: shelf-auth
+        file-extension: yaml
+      discovery:
+        server-addr: 192.168.33.11:8841
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    org:
+      springframework:
+        boot:
+          actuate:
+            endpoint:
+              EndpointId: error
+    com:
+      alibaba:
+        cloud:
+          nacos:
+            client:
+              NacosPropertySourceBuilder: error

@@ -9,6 +9,8 @@ import java.sql.Date;
 import java.util.Collection;
 
 /**
+ * 登录用户
+ *
  * @author of
  * @version 1.0
  * @date 2021/3/19 12:52

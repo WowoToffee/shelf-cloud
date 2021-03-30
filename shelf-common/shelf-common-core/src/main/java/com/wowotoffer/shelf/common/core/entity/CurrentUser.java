@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.Set;
 
 /**
+ * 当前登录用户信息
+ *
  * @author of
  * @version 1.0
  * @date 2021/3/19 12:52

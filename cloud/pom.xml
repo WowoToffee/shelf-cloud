@@ -15,6 +15,7 @@
     <modules>
         <module>../shelf-auth</module>
         <module>../shelf-common</module>
+        <module>../shelf-gateway</module>
     </modules>
 
     <parent>
@@ -29,7 +30,9 @@
         <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
         <com-alibaba-cloud.version>2.1.1.RELEASE</com-alibaba-cloud.version>
 
+        <logstash-logback-encoder.version>6.1</logstash-logback-encoder.version>
         <easy-captcha.version>1.6.2</easy-captcha.version>
+        <jjwt.version>0.9.1</jjwt.version>
     </properties>
 
     <dependencyManagement>

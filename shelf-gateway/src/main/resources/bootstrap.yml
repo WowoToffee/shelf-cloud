@@ -1,0 +1,41 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: shelf-gateway
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: ${nacos.url}:8841
+        group: DEFAULT_GROUP
+        prefix: shelf-gateway
+        file-extension: yaml
+        namespace: 16287963-260c-40ae-a8f3-4f58905202a5
+      discovery:
+        server-addr: ${nacos.url}:8841
+        namespace: 16287963-260c-40ae-a8f3-4f58905202a5
+  boot:
+    admin:
+      client:
+        instance:
+          prefer-ip: true
+
+logging:
+  level:
+    org:
+      springframework:
+        boot:
+          actuate:
+            endpoint:
+              EndpointId: error
+        data:
+          convert:
+            CustomConversions: error
+    com:
+      alibaba:
+        cloud:
+          nacos:
+            client:
+              NacosPropertySourceBuilder: error

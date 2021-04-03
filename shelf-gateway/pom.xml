@@ -50,6 +50,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.wowoToffer</groupId>
+            <artifactId>shelf-common-doc-gateway-starter</artifactId>
+            <version>${shelf-cloud.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>${logstash-logback-encoder.version}</version>

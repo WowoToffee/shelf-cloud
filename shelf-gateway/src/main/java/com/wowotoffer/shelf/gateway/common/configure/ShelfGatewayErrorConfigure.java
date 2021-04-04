@@ -24,6 +24,7 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class ShelfGatewayErrorConfigure {
+
     private final ServerProperties serverProperties;
     private final ApplicationContext applicationContext;
     private final ResourceProperties resourceProperties;

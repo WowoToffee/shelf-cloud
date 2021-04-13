@@ -35,7 +35,18 @@ public class ShelfGatewayRequestFilter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         if(routeEhance){
-
+            // 根据黑名单规则进行过滤
+            Mono<Void> blackListResult = routeEnhanceService.filterBlackList(exchange);
+            if (blackListResult != null) {
+                routeEnhanceService.saveBlockLogs(exchange);
+                return blackListResult;
+            }
+            // 限流接口
+            Mono<Void> rateLimitResult = routeEnhanceService.filterRateLimit(exchange);
+            if (rateLimitResult != null) {
+                routeEnhanceService.saveRateLimitLogs(exchange);
+                return rateLimitResult;
+            }
         }
 
         byte[] token = Base64Utils.encode((ShelfConstant.GATEWAY_TOKEN_VALUE).getBytes());

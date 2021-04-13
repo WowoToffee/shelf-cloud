@@ -6,6 +6,11 @@ import com.wowotoffer.shelf.common.core.entity.ShelfResponse;
 import com.wowotoffer.shelf.common.core.utils.DateUtil;
 import com.wowotoffer.shelf.common.core.utils.ShelfUtil;
 import com.wowotoffer.shelf.gateway.enhance.entity.BlackList;
+import com.wowotoffer.shelf.gateway.enhance.entity.BlockLog;
+import com.wowotoffer.shelf.gateway.enhance.entity.RateLimitLog;
+import com.wowotoffer.shelf.gateway.enhance.entity.RateLimitRule;
+import com.wowotoffer.shelf.gateway.enhance.service.BlockLogService;
+import com.wowotoffer.shelf.gateway.enhance.service.RateLimitLogService;
 import com.wowotoffer.shelf.gateway.enhance.service.RouteEnhanceCacheService;
 import com.wowotoffer.shelf.gateway.enhance.service.RouteEnhanceService;
 import lombok.RequiredArgsConstructor;
@@ -38,14 +43,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class RouteEnhanceServiceImpl implements RouteEnhanceService {
 
+    private static final String METHOD_ALL = "ALL";
     private final RouteEnhanceCacheService routeEnhanceCacheService;
+    private final RateLimitLogService rateLimitLogService;
+    private final BlockLogService blockLogService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
-    public Mono<Void> filterBalckList(ServerWebExchange exchange) {
+    public Mono<Void> filterBlackList(ServerWebExchange exchange) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
+
         try {
             // 获取访问URL
             URI originUri = getGatewayOriginalRequestUrl(exchange);
@@ -74,8 +83,68 @@ public class RouteEnhanceServiceImpl implements RouteEnhanceService {
     }
 
     @Override
+    public void saveBlockLogs(ServerWebExchange exchange) {
+        URI originUri = getGatewayOriginalRequestUrl(exchange);
+        ServerHttpRequest request = exchange.getRequest();
+        String requestIp = ShelfUtil.getServerHttpRequestIpAddress(request);
+
+        if (originUri != null) {
+            BlockLog blockLog = BlockLog.builder()
+                    .ip(requestIp)
+                    .requestMethod(request.getMethodValue())
+                    .requestUri(originUri.getPath())
+                    .build();
+            blockLogService.create(blockLog).subscribe();
+            log.info("Store blocked request logs >>>");
+        }
+    }
+
+    @Override
     public Mono<Void> filterRateLimit(ServerWebExchange exchange) {
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        ServerHttpRequest request = exchange.getRequest();
+        ServerHttpResponse response = exchange.getResponse();
+        try {
+            URI originUri = getGatewayOriginalRequestUrl(exchange);
+            if (originUri != null) {
+                String requestIp = ShelfUtil.getServerHttpRequestIpAddress(request);
+                String requestMethod = request.getMethodValue();
+                AtomicBoolean limit = new AtomicBoolean(false);
+                Object o = routeEnhanceCacheService.getRateLimitRule(originUri.getPath(), METHOD_ALL);
+                if (o == null) {
+                    o = routeEnhanceCacheService.getRateLimitRule(originUri.getPath(), requestMethod);
+                }
+                if (o != null) {
+                    RateLimitRule rule = JSONObject.parseObject(o.toString(), RateLimitRule.class);
+                    Mono<Void> result = doRateLimitCheck(limit, rule, originUri, requestIp, requestMethod, response);
+                    log.info("Rate limit verification completed - {}", stopwatch.stop());
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            } else {
+                log.info("Request IP not obtained, no rate limit filter - {}", stopwatch.stop());
+            }
+        } catch (Exception e) {
+            log.warn("Current limit failure : {} - {}", e.getMessage(), stopwatch.stop());
+        }
         return null;
+    }
+
+    @Override
+    public void saveRateLimitLogs(ServerWebExchange exchange) {
+        URI originUri = getGatewayOriginalRequestUrl(exchange);
+        ServerHttpRequest request = exchange.getRequest();
+        String requestIp = ShelfUtil.getServerHttpRequestIpAddress(request);
+        if (originUri != null) {
+            RateLimitLog rateLimitLog = RateLimitLog.builder()
+                    .ip(requestIp)
+                    .requestMethod(request.getMethodValue())
+                    .requestUri(originUri.getPath())
+                    .build();
+            rateLimitLogService.create(rateLimitLog).subscribe();
+            log.info("Store rate limit logs >>>");
+        }
     }
 
     private URI getGatewayOriginalRequestUrl(ServerWebExchange exchange) {
@@ -114,6 +183,48 @@ public class RouteEnhanceServiceImpl implements RouteEnhanceService {
                 break;
             }
         }
+    }
+
+    /**
+     * 限流校验
+     *
+     * @param limit
+     * @param rule
+     * @param uri
+     * @param requestIp
+     * @param requestMethod
+     * @param response
+     * @return
+     */
+    private Mono<Void> doRateLimitCheck(AtomicBoolean limit, RateLimitRule rule, URI uri,
+                                        String requestIp, String requestMethod, ServerHttpResponse response) {
+        boolean isRateLimitRuleHit = RateLimitRule.OPEN.equals(rule.getStatus())
+                && (RateLimitRule.METHOD_ALL.equalsIgnoreCase(rule.getRequestMethod())
+                || StringUtils.equalsIgnoreCase(requestMethod, rule.getRequestMethod()));
+        if (isRateLimitRuleHit) {
+            if (StringUtils.isNotBlank(rule.getLimitFrom()) && StringUtils.isNotBlank(rule.getLimitTo())) {
+                if (DateUtil.between(LocalTime.parse(rule.getLimitFrom()), LocalTime.parse(rule.getLimitTo()))) {
+                    limit.set(true);
+                }
+            } else {
+                limit.set(true);
+            }
+        }
+        if (limit.get()) {
+            String requestUri = uri.getPath();
+            // 获取当前请求次数
+            int count = routeEnhanceCacheService.getCurrentRequestCount(requestUri, requestIp);
+            // 判断是否是首次（如果是首次就会设置Redis时长）
+            if (count == 0) {
+                routeEnhanceCacheService.setCurrentRequestCount(requestUri, requestIp, Long.parseLong(rule.getIntervalSec()));
+            } else if (count >= Integer.parseInt(rule.getCount())) {
+                return ShelfUtil.makeWebFluxResponse(response, MediaType.APPLICATION_JSON_VALUE,
+                        HttpStatus.TOO_MANY_REQUESTS, new ShelfResponse().message("访问频率超限，请稍后再试"));
+            } else {
+                routeEnhanceCacheService.incrCurrentRequestCount(requestUri, requestIp);
+            }
+        }
+        return null;
     }
 
     private URI getGatewayRequestUrl(ServerWebExchange exchange) {

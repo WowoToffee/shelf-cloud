@@ -1,5 +1,7 @@
 package com.wowotoffer.shelf.gateway.enhance.service;
 
+import com.wowotoffer.shelf.common.core.entity.constant.ShelfConstant;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +17,15 @@ public interface RouteEnhanceService {
      * @param exchange ServerWebExchange
      * @return Mono<Void>
      */
-    Mono<Void> filterBalckList(ServerWebExchange exchange);
+    Mono<Void> filterBlackList(ServerWebExchange exchange);
+
+    /**
+     * 异步存储拦截日志
+     *
+     * @param exchange ServerWebExchange
+     */
+    @Async(ShelfConstant.ASYNC_POOL)
+    void saveBlockLogs(ServerWebExchange exchange);
 
     /**
      * 根据限流规则进行过滤
@@ -24,4 +34,12 @@ public interface RouteEnhanceService {
      * @return Mono<Void>
      */
     Mono<Void> filterRateLimit(ServerWebExchange exchange);
+
+    /**
+     * 异步存储限流日志
+     *
+     * @param exchange ServerWebExchange
+     */
+    @Async(ShelfConstant.ASYNC_POOL)
+    void saveRateLimitLogs(ServerWebExchange exchange);
 }

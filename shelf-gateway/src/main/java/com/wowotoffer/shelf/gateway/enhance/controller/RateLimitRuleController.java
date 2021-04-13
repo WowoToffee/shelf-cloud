@@ -1,8 +1,8 @@
 package com.wowotoffer.shelf.gateway.enhance.controller;
 
-import cc.mrbird.febs.common.core.entity.QueryRequest;
-import cc.mrbird.febs.gateway.enhance.entity.RateLimitRule;
-import cc.mrbird.febs.gateway.enhance.service.RateLimitRuleService;
+import com.wowotoffer.shelf.common.core.entity.QueryRequest;
+import com.wowotoffer.shelf.gateway.enhance.entity.RateLimitRule;
+import com.wowotoffer.shelf.gateway.enhance.service.RateLimitRuleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

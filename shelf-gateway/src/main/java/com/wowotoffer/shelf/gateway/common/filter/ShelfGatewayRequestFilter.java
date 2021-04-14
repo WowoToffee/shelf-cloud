@@ -41,7 +41,7 @@ public class ShelfGatewayRequestFilter implements GlobalFilter {
                 routeEnhanceService.saveBlockLogs(exchange);
                 return blackListResult;
             }
-            // 限流接口
+            // 根据限流规则进行过滤
             Mono<Void> rateLimitResult = routeEnhanceService.filterRateLimit(exchange);
             if (rateLimitResult != null) {
                 routeEnhanceService.saveRateLimitLogs(exchange);

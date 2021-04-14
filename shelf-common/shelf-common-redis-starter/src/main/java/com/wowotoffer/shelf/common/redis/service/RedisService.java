@@ -143,6 +143,20 @@ public class RedisService {
     }
 
     /**
+     * 递增刷新时间
+     *
+     * @param key   键
+     * @param delta 要增加几(大于0)
+     * @return Long
+     */
+    public Long incr(String key, Long delta, Long time) {
+        if (delta < 0) {
+            throw new RuntimeException("递增因子必须大于0");
+        }
+        return redisTemplate.opsForValue().increment(key, delta);
+    }
+
+    /**
      * 递减
      *
      * @param key   键

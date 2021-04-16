@@ -1,9 +1,11 @@
 package com.wowotoffer.shelf.gateway.enhance.service.impl;
 
 import com.wowotoffer.shelf.common.core.entity.QueryRequest;
+import com.wowotoffer.shelf.common.core.utils.DateUtil;
 import com.wowotoffer.shelf.gateway.enhance.entity.RouteLog;
 import com.wowotoffer.shelf.gateway.enhance.mapper.RouteLogMapper;
 import com.wowotoffer.shelf.gateway.enhance.service.RouteLogService;
+import com.wowotoffer.shelf.gateway.enhance.utils.AddressUtil;
 import com.wowotoffer.shelf.gateway.enhance.utils.PageableExecutionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 
@@ -35,6 +38,13 @@ public class RouteLogServiceImpl implements RouteLogService {
     @Autowired(required = false)
     public void setTemplate(ReactiveMongoTemplate template) {
         this.template = template;
+    }
+
+    @Override
+    public Mono<RouteLog> create(RouteLog routeLog) {
+        routeLog.setCreateTime(DateUtil.formatFullTime(LocalDateTime.now(), DateUtil.FULL_TIME_SPLIT_PATTERN));
+        routeLog.setLocation(AddressUtil.getCityInfo(routeLog.getIp()));
+        return routeLogMapper.insert(routeLog);
     }
 
     @Override

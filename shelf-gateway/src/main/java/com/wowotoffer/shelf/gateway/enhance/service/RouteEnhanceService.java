@@ -42,4 +42,13 @@ public interface RouteEnhanceService {
      */
     @Async(ShelfConstant.ASYNC_POOL)
     void saveRateLimitLogs(ServerWebExchange exchange);
+
+
+    /**
+     * 异步存储请求日志
+     *
+     * @param exchange ServerWebExchange
+     */
+    @Async(ShelfConstant.ASYNC_POOL)
+    void saveRequestLogs(ServerWebExchange exchange);
 }

@@ -9,10 +9,13 @@ import com.wowotoffer.shelf.gateway.enhance.entity.BlackList;
 import com.wowotoffer.shelf.gateway.enhance.entity.BlockLog;
 import com.wowotoffer.shelf.gateway.enhance.entity.RateLimitLog;
 import com.wowotoffer.shelf.gateway.enhance.entity.RateLimitRule;
+import com.wowotoffer.shelf.gateway.enhance.entity.RouteLog;
 import com.wowotoffer.shelf.gateway.enhance.service.BlockLogService;
 import com.wowotoffer.shelf.gateway.enhance.service.RateLimitLogService;
 import com.wowotoffer.shelf.gateway.enhance.service.RouteEnhanceCacheService;
 import com.wowotoffer.shelf.gateway.enhance.service.RouteEnhanceService;
+import com.wowotoffer.shelf.gateway.enhance.service.RouteLogService;
+import com.wowotoffer.shelf.gateway.enhance.utils.AddressUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,9 +47,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RouteEnhanceServiceImpl implements RouteEnhanceService {
 
     private static final String METHOD_ALL = "ALL";
+    private static final String TOKEN_CHECK_URL = "/auth/user";
     private final RouteEnhanceCacheService routeEnhanceCacheService;
     private final RateLimitLogService rateLimitLogService;
     private final BlockLogService blockLogService;
+    private final RouteLogService routeLogService;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
@@ -144,6 +149,29 @@ public class RouteEnhanceServiceImpl implements RouteEnhanceService {
                     .build();
             rateLimitLogService.create(rateLimitLog).subscribe();
             log.info("Store rate limit logs >>>");
+        }
+    }
+
+    @Override
+    public void saveRequestLogs(ServerWebExchange exchange) {
+        URI originUri = getGatewayOriginalRequestUrl(exchange);
+        // /auth/user为令牌校验请求，是系统自发行为，非用户请求，故不记录
+        if (!StringUtils.equalsIgnoreCase(TOKEN_CHECK_URL, originUri.getPath())) {
+            URI url = getGatewayRequestUrl(exchange);
+            Route route = getGatewayRoute(exchange);
+            ServerHttpRequest request = exchange.getRequest();
+            String ipAddress = ShelfUtil.getServerHttpRequestIpAddress(request);
+            if (url != null && route != null) {
+                RouteLog routeLog = RouteLog.builder()
+                        .ip(ipAddress)
+                        .requestUri(originUri.getPath())
+                        .targetServer(route.getId())
+                        .targetUri(url.getPath())
+                        .requestMethod(request.getMethodValue())
+                        .location(AddressUtil.getCityInfo(ipAddress))
+                        .build();
+                routeLogService.create(routeLog).subscribe();
+            }
         }
     }
 

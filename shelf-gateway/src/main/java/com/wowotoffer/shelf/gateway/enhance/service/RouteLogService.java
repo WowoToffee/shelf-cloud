@@ -11,6 +11,15 @@ import reactor.core.publisher.Mono;
  * @date 2021/4/13 20:40
  */
 public interface RouteLogService {
+
+    /**
+     * 创建路由日志
+     *
+     * @param routeLog 路由日志
+     * @return 路由日志
+     */
+    Mono<RouteLog> create(RouteLog routeLog);
+
     /**
      * 查找路由日志分页数据
      *

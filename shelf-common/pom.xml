@@ -20,5 +20,6 @@
         <module>shelf-common-core</module>
         <module>shelf-common-redis-starter</module>
         <module>shelf-common-doc-gateway-starter</module>
+        <module>shelf-common-doc</module>
     </modules>
 </project>

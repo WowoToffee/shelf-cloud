@@ -27,7 +27,6 @@ public class ShelfDocGatewayHeaderFilter extends AbstractGatewayFilterFactory {
             }
 
             String basePath = path.substring(0, path.lastIndexOf(URI));
-
             ServerHttpRequest newRequest = request.mutate().header(HEADER_NAME, basePath).build();
             ServerWebExchange newExchange = exchange.mutate().request(newRequest).build();
             return chain.filter(newExchange);

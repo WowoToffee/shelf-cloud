@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>com.wowoToffer</groupId>
-            <artifactId>shelf-common-core</artifactId>
+            <artifactId>shelf-common-doc</artifactId>
             <version>${shelf-cloud.version}</version>
         </dependency>
         <dependency>

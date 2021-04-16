@@ -47,6 +47,7 @@ public class ShelfGatewayRequestFilter implements GlobalFilter {
                 routeEnhanceService.saveRateLimitLogs(exchange);
                 return rateLimitResult;
             }
+            routeEnhanceService.saveRequestLogs(exchange);
         }
 
         byte[] token = Base64Utils.encode((ShelfConstant.GATEWAY_TOKEN_VALUE).getBytes());

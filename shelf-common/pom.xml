@@ -22,5 +22,6 @@
         <module>shelf-common-doc-gateway-starter</module>
         <module>shelf-common-doc</module>
         <module>shelf-common-doc-starter</module>
+        <module>shelf-common-security-starter</module>
     </modules>
 </project>

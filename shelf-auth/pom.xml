@@ -30,7 +30,11 @@
             <artifactId>shelf-common-core</artifactId>
             <version>${shelf-cloud.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.wowoToffer</groupId>
+            <artifactId>shelf-common-security-starter</artifactId>
+            <version>${shelf-cloud.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.wowoToffer</groupId>
             <artifactId>shelf-common-doc-starter</artifactId>

@@ -31,12 +31,13 @@ public class SecurityConfigure {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 
         return http
                 .exceptionHandling()
-                .authenticationEntryPoint((s, o) -> Mono.fromRunnable(() -> s.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)))
-                .accessDeniedHandler((s, o) -> Mono.fromRunnable(() -> s.getResponse().setStatusCode(HttpStatus.FORBIDDEN)))
+                .authenticationEntryPoint((s, e) -> Mono.fromRunnable(() -> s.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)))
+                .accessDeniedHandler((s, e) -> Mono.fromRunnable(() -> s.getResponse().setStatusCode(HttpStatus.FORBIDDEN)))
                 .and()
                 .headers().frameOptions().disable()
                 .and()

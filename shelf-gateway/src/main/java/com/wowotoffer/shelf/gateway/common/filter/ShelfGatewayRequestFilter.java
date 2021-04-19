@@ -50,6 +50,7 @@ public class ShelfGatewayRequestFilter implements GlobalFilter {
             routeEnhanceService.saveRequestLogs(exchange);
         }
 
+        // 转发添加gateway token，进行权限校验
         byte[] token = Base64Utils.encode((ShelfConstant.GATEWAY_TOKEN_VALUE).getBytes());
         String[] headerValues = {new String(token)};
         ServerHttpRequest build = exchange.getRequest().mutate().header(ShelfConstant.GATEWAY_TOKEN_HEADER, headerValues).build();

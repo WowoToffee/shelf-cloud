@@ -23,5 +23,6 @@
         <module>shelf-common-doc</module>
         <module>shelf-common-doc-starter</module>
         <module>shelf-common-security-starter</module>
+        <module>shelf-common-datasource-starter</module>
     </modules>
 </project>

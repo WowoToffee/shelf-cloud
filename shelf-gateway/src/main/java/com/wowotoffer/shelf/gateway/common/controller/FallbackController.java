@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RestController
 public class FallbackController {
+
     @RequestMapping("fallback/{name}")
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Mono<ShelfResponse> systemFallback(@PathVariable String name){

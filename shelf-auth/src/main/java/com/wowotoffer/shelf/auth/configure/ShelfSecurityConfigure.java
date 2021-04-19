@@ -2,13 +2,13 @@ package com.wowotoffer.shelf.auth.configure;
 
 import com.wowotoffer.shelf.auth.filter.ValidateCodeFilter;
 import com.wowotoffer.shelf.auth.service.ShelfUserDetailService;
+import com.wowotoffer.shelf.common.core.entity.constant.EndpointConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -48,12 +48,19 @@ public class ShelfSecurityConfigure extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
                 .requestMatchers()
-                .antMatchers("/oauth/**")
+                .antMatchers(EndpointConstant.OAUTH_ALL, EndpointConstant.LOGIN)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/oauth/**").authenticated()
+                .antMatchers(EndpointConstant.OAUTH_ALL).authenticated()
                 .and()
-                .csrf().disable();
+                .formLogin()
+                .loginPage(EndpointConstant.LOGIN)
+                .loginProcessingUrl(EndpointConstant.LOGIN)
+//                .successHandler(successHandler)
+//                .failureHandler(failureHandler)
+                .permitAll()
+                .and().csrf().disable()
+                .httpBasic().disable();
     }
 
     @Override

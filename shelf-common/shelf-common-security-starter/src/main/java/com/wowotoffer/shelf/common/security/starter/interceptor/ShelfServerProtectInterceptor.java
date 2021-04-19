@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 校验是否只能通过网关调用
+ *
  * @author of
  * @version 1.0
  * @date 2021/4/18 21:44
@@ -35,9 +37,9 @@ public class ShelfServerProtectInterceptor implements HandlerInterceptor {
         // 网管校验
         if (StringUtils.equals(gatewayToken, token)) {
             return true;
-        }else {
-            ShelfResponse shelfResponse = new ShelfResponse();
-            ShelfUtil.makeJsonResponse(response, HttpServletResponse.SC_FORBIDDEN, shelfResponse.message("请通过网关获取资源"));
+        } else {
+            ShelfResponse ShelfResponse = new ShelfResponse();
+            ShelfUtil.makeJsonResponse(response, HttpServletResponse.SC_FORBIDDEN, ShelfResponse.message("请通过网关获取资源"));
             return false;
         }
 

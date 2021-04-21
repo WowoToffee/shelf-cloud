@@ -32,20 +32,13 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
  */
 @Configuration
 @EnableAuthorizationServer
+@RequiredArgsConstructor
 public class ShelfAuthorizationServerConfigure extends AuthorizationServerConfigurerAdapter {
     private final AuthenticationManager authenticationManager;
     private final RedisConnectionFactory redisConnectionFactory;
     private final ShelfUserDetailService userDetailService;
     private final PasswordEncoder passwordEncoder;
     private final ShelfWebResponseExceptionTranslator exceptionTranslator;
-
-    public ShelfAuthorizationServerConfigure(AuthenticationManager authenticationManager, RedisConnectionFactory redisConnectionFactory, ShelfUserDetailService userDetailService, PasswordEncoder passwordEncoder, ShelfWebResponseExceptionTranslator exceptionTranslator) {
-        this.authenticationManager = authenticationManager;
-        this.redisConnectionFactory = redisConnectionFactory;
-        this.userDetailService = userDetailService;
-        this.passwordEncoder = passwordEncoder;
-        this.exceptionTranslator = exceptionTranslator;
-    }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {

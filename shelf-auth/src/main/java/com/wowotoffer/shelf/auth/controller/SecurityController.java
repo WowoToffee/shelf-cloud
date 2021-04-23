@@ -2,6 +2,7 @@ package com.wowotoffer.shelf.auth.controller;
 
 import com.wowotoffer.shelf.auth.service.ValidateCodeService;
 import com.wowotoffer.shelf.common.core.entity.ShelfResponse;
+import com.wowotoffer.shelf.common.core.entity.constant.StringConstant;
 import com.wowotoffer.shelf.common.core.exception.ShelfAuthException;
 import com.wowotoffer.shelf.common.core.exception.ValidateCodeException;
 import lombok.RequiredArgsConstructor;
@@ -61,5 +62,19 @@ public class SecurityController {
     @RequestMapping("login")
     public String login() {
         return "login";
+    }
+
+    /**
+     * 登出
+     *
+     * @param token
+     * @return
+     */
+    @ResponseBody
+    @DeleteMapping("signout")
+    public ShelfResponse signout(@RequestHeader("Authorization") String token) {
+        token = StringUtils.replace(token, "bearer ", StringConstant.EMPTY);
+        consumerTokenServices.revokeToken(token);
+        return new ShelfResponse().message("signout");
     }
 }

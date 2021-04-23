@@ -4,6 +4,7 @@ import com.wowotoffer.shelf.common.security.starter.annotation.EnableShelfCloudR
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
  * @author of
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2021/3/19 10:42
  */
 @SpringBootApplication
+@EnableRedisHttpSession
 @EnableShelfCloudResourceServer
 @MapperScan("com.wowotoffer.shelf.auth.mapper")
 public class ShelfAuthApplication {

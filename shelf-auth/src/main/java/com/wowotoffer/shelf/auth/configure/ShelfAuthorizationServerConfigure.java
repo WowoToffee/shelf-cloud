@@ -1,6 +1,9 @@
 package com.wowotoffer.shelf.auth.configure;
 
+import com.wowotoffer.shelf.auth.properties.ShelfAuthProperties;
 import com.wowotoffer.shelf.auth.service.ShelfUserDetailService;
+import com.wowotoffer.shelf.auth.service.impl.RedisAuthenticationCodeService;
+import com.wowotoffer.shelf.auth.service.impl.RedisClientDetailsService;
 import com.wowotoffer.shelf.auth.translator.ShelfWebResponseExceptionTranslator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +17,19 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter;
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
+
+import java.util.UUID;
 
 /**
  * /oauth/authorize：授权端点
@@ -35,36 +48,40 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
 @RequiredArgsConstructor
 public class ShelfAuthorizationServerConfigure extends AuthorizationServerConfigurerAdapter {
     private final AuthenticationManager authenticationManager;
-    private final RedisConnectionFactory redisConnectionFactory;
     private final ShelfUserDetailService userDetailService;
-    private final PasswordEncoder passwordEncoder;
+    private final ShelfAuthProperties properties;
     private final ShelfWebResponseExceptionTranslator exceptionTranslator;
+    private final RedisAuthenticationCodeService authenticationCodeService;
+    private final RedisClientDetailsService redisClientDetailsService;
+    private final RedisConnectionFactory redisConnectionFactory;
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                // client_id
-                .withClient("shelf")
-                // client_secret
-                .secret(passwordEncoder.encode("123456"))
-                // 该client允许的授权类型
-                .authorizedGrantTypes("password", "refresh_token")
-                // 允许的授权范围
-                .scopes("all");
+        clients.withClientDetails(redisClientDetailsService);
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints.tokenStore(tokenStore())
                 .userDetailsService(userDetailService)
+                .authorizationCodeServices(authenticationCodeService)
                 .authenticationManager(authenticationManager)
-                .tokenServices(defaultTokenServices())
                 .exceptionTranslator(exceptionTranslator);
+        if (properties.getEnableJwt()) {
+            endpoints.accessTokenConverter(jwtAccessTokenConverter());
+        }
     }
 
     @Bean
     public TokenStore tokenStore() {
-        return new RedisTokenStore(redisConnectionFactory);
+        if (properties.getEnableJwt()) {
+            return new JwtTokenStore(jwtAccessTokenConverter());
+        } else {
+            RedisTokenStore redisTokenStore = new RedisTokenStore(redisConnectionFactory);
+            // 解决每次生成的 token都一样的问题
+            redisTokenStore.setAuthenticationKeyGenerator(oAuth2Authentication -> UUID.randomUUID().toString());
+            return redisTokenStore;
+        }
     }
 
     /**
@@ -78,8 +95,33 @@ public class ShelfAuthorizationServerConfigure extends AuthorizationServerConfig
         DefaultTokenServices tokenServices = new DefaultTokenServices();
         tokenServices.setTokenStore(tokenStore());
         tokenServices.setSupportRefreshToken(true);
-        tokenServices.setAccessTokenValiditySeconds(60 * 60 * 24);
-        tokenServices.setRefreshTokenValiditySeconds(60 * 60 * 24 * 7);
+        tokenServices.setClientDetailsService(redisClientDetailsService);
         return tokenServices;
     }
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter() {
+        JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
+        DefaultAccessTokenConverter defaultAccessTokenConverter = (DefaultAccessTokenConverter) accessTokenConverter.getAccessTokenConverter();
+        DefaultUserAuthenticationConverter userAuthenticationConverter = new DefaultUserAuthenticationConverter();
+        userAuthenticationConverter.setUserDetailsService(userDetailService);
+        defaultAccessTokenConverter.setUserTokenConverter(userAuthenticationConverter);
+        accessTokenConverter.setSigningKey(properties.getJwtAccessKey());
+        return accessTokenConverter;
+    }
+
+    @Bean
+    public ResourceOwnerPasswordTokenGranter resourceOwnerPasswordTokenGranter(AuthenticationManager authenticationManager, OAuth2RequestFactory oAuth2RequestFactory) {
+        DefaultTokenServices defaultTokenServices = defaultTokenServices();
+        if (properties.getEnableJwt()) {
+            defaultTokenServices.setTokenEnhancer(jwtAccessTokenConverter());
+        }
+        return new ResourceOwnerPasswordTokenGranter(authenticationManager, defaultTokenServices, redisClientDetailsService, oAuth2RequestFactory);
+    }
+
+    @Bean
+    public DefaultOAuth2RequestFactory oAuth2RequestFactory() {
+        return new DefaultOAuth2RequestFactory(redisClientDetailsService);
+    }
+
 }

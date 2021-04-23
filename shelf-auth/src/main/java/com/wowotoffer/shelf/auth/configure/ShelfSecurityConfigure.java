@@ -3,7 +3,7 @@ package com.wowotoffer.shelf.auth.configure;
 import com.wowotoffer.shelf.auth.filter.ValidateCodeFilter;
 import com.wowotoffer.shelf.auth.service.ShelfUserDetailService;
 import com.wowotoffer.shelf.common.core.entity.constant.EndpointConstant;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,13 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Order(2)
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class ShelfSecurityConfigure extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private ShelfUserDetailService userDetailService;
-
-    @Autowired
-    private ValidateCodeFilter validateCodeFilter;
+    private final ShelfUserDetailService userDetailService;
+    private final ValidateCodeFilter validateCodeFilter;
 
 
     @Bean

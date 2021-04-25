@@ -2,8 +2,9 @@ package com.wowotoffer.shelf.auth;
 
 import com.wowotoffer.shelf.common.security.starter.annotation.EnableShelfCloudResourceServer;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
@@ -17,6 +18,8 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @MapperScan("com.wowotoffer.shelf.auth.mapper")
 public class ShelfAuthApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ShelfAuthApplication.class, args);
+        new SpringApplicationBuilder(ShelfAuthApplication.class)
+                .web(WebApplicationType.SERVLET)
+                .run(args);
     }
 }

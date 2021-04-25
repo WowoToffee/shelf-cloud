@@ -3,7 +3,6 @@ package com.wowotoffer.shelf.auth.configure;
 import com.wowotoffer.shelf.auth.filter.ValidateCodeFilter;
 import com.wowotoffer.shelf.auth.handler.ShelfWebLoginFailureHandler;
 import com.wowotoffer.shelf.auth.handler.ShelfWebLoginSuccessHandler;
-import com.wowotoffer.shelf.auth.service.ShelfUserDetailService;
 import com.wowotoffer.shelf.common.core.entity.constant.EndpointConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +12,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -29,16 +28,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class ShelfSecurityConfigure extends WebSecurityConfigurerAdapter {
 
-    private final ShelfUserDetailService userDetailService;
+    private final UserDetailsService userDetailService;
     private final ValidateCodeFilter validateCodeFilter;
     private final PasswordEncoder passwordEncoder;
     private final ShelfWebLoginSuccessHandler successHandler;
     private final ShelfWebLoginFailureHandler failureHandler;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     @Override

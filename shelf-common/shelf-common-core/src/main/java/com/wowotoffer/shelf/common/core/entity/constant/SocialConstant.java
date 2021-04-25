@@ -9,6 +9,8 @@ public interface SocialConstant {
 
     String SOCIAL_LOGIN = "social_login";
 
+    String SOCIAL_LOGIN_PASSWORD = "shelf_social_login_password";
+
     ThreadLocal<String> PASSWORD_THREAD_LOCAL = new ThreadLocal<>();
 
     /**

@@ -7,6 +7,7 @@ import com.wowotoffer.shelf.common.core.exception.ValidateCodeException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ import java.security.Principal;
  * @version 1.0
  * @date 2021/3/19 12:55
  */
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class SecurityController {
 

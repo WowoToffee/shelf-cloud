@@ -21,14 +21,25 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @EnableResourceServer
 @EnableAutoConfiguration(exclude = UserDetailsServiceAutoConfiguration.class)
 public class ShelfCloudResourceServerConfigure extends ResourceServerConfigurerAdapter {
-    @Autowired
+
     private ShelfCloudSecurityProperties properties;
-
-    @Autowired
     private ShelfAccessDeniedHandler accessDeniedHandler;
+    private ShelfAuthExceptionEntryPoint exceptionEntryPoint;
 
     @Autowired
-    private ShelfAuthExceptionEntryPoint exceptionEntryPoint;
+    public void setProperties(ShelfCloudSecurityProperties properties) {
+        this.properties = properties;
+    }
+
+    @Autowired
+    public void setAccessDeniedHandler(ShelfAccessDeniedHandler accessDeniedHandler) {
+        this.accessDeniedHandler = accessDeniedHandler;
+    }
+
+    @Autowired
+    public void setExceptionEntryPoint(ShelfAuthExceptionEntryPoint exceptionEntryPoint) {
+        this.exceptionEntryPoint = exceptionEntryPoint;
+    }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {

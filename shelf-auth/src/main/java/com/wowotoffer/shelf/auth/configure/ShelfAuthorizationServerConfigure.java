@@ -1,23 +1,20 @@
 package com.wowotoffer.shelf.auth.configure;
 
 import com.wowotoffer.shelf.auth.properties.ShelfAuthProperties;
-import com.wowotoffer.shelf.auth.service.ShelfUserDetailService;
 import com.wowotoffer.shelf.auth.service.impl.RedisAuthenticationCodeService;
 import com.wowotoffer.shelf.auth.service.impl.RedisClientDetailsService;
 import com.wowotoffer.shelf.auth.translator.ShelfWebResponseExceptionTranslator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
@@ -48,7 +45,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ShelfAuthorizationServerConfigure extends AuthorizationServerConfigurerAdapter {
     private final AuthenticationManager authenticationManager;
-    private final ShelfUserDetailService userDetailService;
+    private final UserDetailsService userDetailService;
     private final ShelfAuthProperties properties;
     private final ShelfWebResponseExceptionTranslator exceptionTranslator;
     private final RedisAuthenticationCodeService authenticationCodeService;

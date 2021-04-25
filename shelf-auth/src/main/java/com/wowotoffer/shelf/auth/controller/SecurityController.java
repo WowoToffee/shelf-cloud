@@ -3,11 +3,9 @@ package com.wowotoffer.shelf.auth.controller;
 import com.wowotoffer.shelf.auth.service.ValidateCodeService;
 import com.wowotoffer.shelf.common.core.entity.ShelfResponse;
 import com.wowotoffer.shelf.common.core.entity.constant.StringConstant;
-import com.wowotoffer.shelf.common.core.exception.ShelfAuthException;
 import com.wowotoffer.shelf.common.core.exception.ValidateCodeException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.web.bind.annotation.*;
 

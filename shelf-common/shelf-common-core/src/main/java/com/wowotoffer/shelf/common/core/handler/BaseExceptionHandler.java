@@ -1,7 +1,7 @@
 package com.wowotoffer.shelf.common.core.handler;
 
 import com.wowotoffer.shelf.common.core.entity.ShelfResponse;
-import com.wowotoffer.shelf.common.core.exception.ShelfAuthException;
+import com.wowotoffer.shelf.common.core.exception.ShelfException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,9 +25,9 @@ public class BaseExceptionHandler {
         return new ShelfResponse().message("系统内部异常");
     }
 
-    @ExceptionHandler(value = ShelfAuthException.class)
+    @ExceptionHandler(value = ShelfException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ShelfResponse handleShelfAuthException(ShelfAuthException e) {
+    public ShelfResponse handleShelfAuthException(ShelfException e) {
         log.error("系统错误", e);
         return new ShelfResponse().message(e.getMessage());
     }

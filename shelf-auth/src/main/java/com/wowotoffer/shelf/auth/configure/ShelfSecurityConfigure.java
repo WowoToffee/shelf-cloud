@@ -1,6 +1,8 @@
 package com.wowotoffer.shelf.auth.configure;
 
 import com.wowotoffer.shelf.auth.filter.ValidateCodeFilter;
+import com.wowotoffer.shelf.auth.handler.ShelfWebLoginFailureHandler;
+import com.wowotoffer.shelf.auth.handler.ShelfWebLoginSuccessHandler;
 import com.wowotoffer.shelf.auth.service.ShelfUserDetailService;
 import com.wowotoffer.shelf.common.core.entity.constant.EndpointConstant;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,9 @@ public class ShelfSecurityConfigure extends WebSecurityConfigurerAdapter {
 
     private final ShelfUserDetailService userDetailService;
     private final ValidateCodeFilter validateCodeFilter;
-
+    private final PasswordEncoder passwordEncoder;
+    private final ShelfWebLoginSuccessHandler successHandler;
+    private final ShelfWebLoginFailureHandler failureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -54,8 +58,8 @@ public class ShelfSecurityConfigure extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage(EndpointConstant.LOGIN)
                 .loginProcessingUrl(EndpointConstant.LOGIN)
-//                .successHandler(successHandler)
-//                .failureHandler(failureHandler)
+                .successHandler(successHandler)
+                .failureHandler(failureHandler)
                 .permitAll()
                 .and().csrf().disable()
                 .httpBasic().disable();
@@ -63,6 +67,6 @@ public class ShelfSecurityConfigure extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailService).passwordEncoder(passwordEncoder);
     }
 }

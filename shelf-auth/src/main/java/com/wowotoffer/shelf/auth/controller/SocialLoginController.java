@@ -57,7 +57,7 @@ public class SocialLoginController {
     @GetMapping("/login/{oauthType}/{type}")
     public void renderAuth(@PathVariable String oauthType, @PathVariable String type, HttpServletResponse response) throws ShelfException, IOException {
         AuthRequest authRequest = socialLoginService.renderAuth(oauthType);
-        response.sendRedirect(authRequest.authorize(oauthType + StringConstant.DOUBLE_COLON + AuthStateUtils.createState() + StringConstant.DOUBLE_COLON + type));
+        response.sendRedirect(authRequest.authorize(oauthType + StringConstant.DOUBLE_COLON + AuthStateUtils.createState()) + "::" + type);
     }
 
     /**

@@ -79,12 +79,12 @@ public class SocialLoginServiceImpl implements SocialLoginService {
     public ShelfResponse resolveLogin(String oauthType, AuthCallback callback) throws ShelfException {
         ShelfResponse shelfResponse = new ShelfResponse();
         AuthRequest authRequest = factory.get(getAuthSource(oauthType));
-        AuthResponse response = authRequest.login(resolveAuthCallback(callback));
+        AuthResponse<?> response = authRequest.login(resolveAuthCallback(callback));
         if (response.ok()) {
             AuthUser authUser = (AuthUser) response.getData();
             UserConnection userConnection = userConnectionService.selectByCondition(authUser.getSource().toString(), authUser.getUuid());
             if(userConnection == null){
-                shelfResponse.message(NOT_BIND).data(authRequest);
+                shelfResponse.message(NOT_BIND).data(authUser);
             } else {
                 SystemUser user = userManager.findByName(userConnection.getUserName());
                 if (user == null) {

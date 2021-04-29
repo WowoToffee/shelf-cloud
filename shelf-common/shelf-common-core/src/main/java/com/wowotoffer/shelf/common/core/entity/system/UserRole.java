@@ -8,8 +8,6 @@ import java.io.Serializable;
 
 /**
  * @author of
- * @version 1.0
- * @date 2021/3/23 20:38
  */
 @Data
 @TableName("t_user_role")

@@ -3,7 +3,7 @@ package com.wowotoffer.shelf.common.core.entity.constant;
 /**
  * 端点常量
  *
- * @author MrBird
+ * @author of
  */
 public interface EndpointConstant {
 

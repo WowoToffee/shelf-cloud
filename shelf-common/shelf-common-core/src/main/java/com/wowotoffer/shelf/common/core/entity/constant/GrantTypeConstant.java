@@ -3,7 +3,7 @@ package com.wowotoffer.shelf.common.core.entity.constant;
 /**
  * 认证类型常量类
  *
- * @author MrBird
+ * @author of
  */
 public interface GrantTypeConstant {
 

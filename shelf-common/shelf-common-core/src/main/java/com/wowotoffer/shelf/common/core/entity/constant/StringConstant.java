@@ -1,7 +1,7 @@
 package com.wowotoffer.shelf.common.core.entity.constant;
 
 /**
- * @author MrBird
+ * @author of
  */
 public interface StringConstant {
     String AMPERSAND = "&";

@@ -16,6 +16,7 @@
         <module>../shelf-auth</module>
         <module>../shelf-common</module>
         <module>../shelf-gateway</module>
+        <module>../shelf-server</module>
     </modules>
 
     <parent>

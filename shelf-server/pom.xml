@@ -19,5 +19,6 @@
 
     <modules>
         <module>shelf-server-system</module>
+        <module>shelf-server-test</module>
     </modules>
 </project>

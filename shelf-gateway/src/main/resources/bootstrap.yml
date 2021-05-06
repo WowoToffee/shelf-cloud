@@ -6,19 +6,15 @@ spring:
   profiles:
     active: dev
   cloud:
-    sentinel:
-      transport:
-        port: 8719
-        dashboard: localhost:8080
     nacos:
       config:
-        server-addr: ${nacos.url}:8841
+        server-addr: ${nacos.url}:8848
         group: DEFAULT_GROUP
         prefix: shelf-gateway
         file-extension: yaml
         namespace: 16287963-260c-40ae-a8f3-4f58905202a5
       discovery:
-        server-addr: ${nacos.url}:8841
+        server-addr: ${nacos.url}:8848
         namespace: 16287963-260c-40ae-a8f3-4f58905202a5
   boot:
     admin:

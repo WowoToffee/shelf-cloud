@@ -1,5 +1,6 @@
 package com.wowotoffer.shelf.server.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 /**
  * @author of
@@ -29,5 +32,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, SystemUser> impleme
         Page<SystemUser> page = new Page<>(request.getPageNum(), request.getPageSize());
         SortUtil.handlePageSort(request, page, "userId", ShelfConstant.ORDER_ASC, false);
         return this.baseMapper.findUserDetailPage(page, user);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateLoginTime(String username) {
+        SystemUser user = new SystemUser();
+        user.setLastLoginTime(new Date());
+
+        this.baseMapper.update(user, new LambdaQueryWrapper<SystemUser>().eq(SystemUser::getUsername, username));
     }
 }

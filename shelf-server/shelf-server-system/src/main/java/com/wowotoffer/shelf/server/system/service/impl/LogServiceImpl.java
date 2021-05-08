@@ -59,7 +59,6 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, Log> implements ILogS
 
         Page<Log> page = new Page<>(request.getPageNum(), request.getPageSize());
         SortUtil.handlePageSort(request, page, "createTime", ShelfConstant.ORDER_DESC, true);
-
         return this.page(page, queryWrapper);
     }
 

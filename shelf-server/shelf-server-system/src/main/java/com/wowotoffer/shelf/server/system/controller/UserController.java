@@ -44,7 +44,6 @@ public class UserController {
         this.loginLogService.saveLoginLog(loginLog);
     }
 
-
     @GetMapping
     @PreAuthorize("hasAuthority('user:view')")
     public ShelfResponse userList(QueryRequest queryRequest, SystemUser user) {

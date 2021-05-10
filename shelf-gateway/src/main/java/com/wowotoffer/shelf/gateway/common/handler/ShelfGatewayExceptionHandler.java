@@ -1,5 +1,6 @@
 package com.wowotoffer.shelf.gateway.common.handler;
 
+import com.alibaba.csp.sentinel.slots.block.flow.FlowException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class ShelfGatewayExceptionHandler extends DefaultErrorWebExceptionHandler {
 
     public ShelfGatewayExceptionHandler(ErrorAttributes errorAttributes, ResourceProperties resourceProperties,
-                                       ErrorProperties errorProperties, ApplicationContext applicationContext) {
+                                        ErrorProperties errorProperties, ApplicationContext applicationContext) {
         super(errorAttributes, resourceProperties, errorProperties, applicationContext);
     }
 
@@ -50,6 +51,8 @@ public class ShelfGatewayExceptionHandler extends DefaultErrorWebExceptionHandle
         } else if (error instanceof ResponseStatusException
                 && StringUtils.containsIgnoreCase(error.getMessage(), HttpStatus.NOT_FOUND.toString())) {
             errorMessage = "未找到该资源";
+        } else if (error instanceof FlowException) {
+            errorMessage = "手速太快了，亲你慢一点";
         } else {
             errorMessage = "网关转发异常";
         }
